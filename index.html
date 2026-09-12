@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sales Power Play — Formenty ASM Incentive</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#07070a;
+    --panel:#101014;
+    --panel-2:#15151b;
+    --line:#26262f;
+    --text:#f2f1f5;
+    --muted:#9a98a6;
+    --gold:#f2b632;
+    --gold-2:#e8a417;
+    --pink:#ef1b7a;
+    --purple:#8b5cf6;
+    --orange:#ff7d2e;
+    --cyan:#35c6f4;
+    --bronze:#4d90ff;
+    --silver:#33cf7a;
+    --champion:#ef1b7a;
+    --font-display:'Poppins', sans-serif;
+    --font-body:'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(242,182,50,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at -10% 20%, rgba(239,27,122,0.08), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;}
+
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- HEADER ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0 18px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:34px;
+    gap:16px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand svg{width:30px;height:30px;flex-shrink:0;}
+  .brand-text{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:0.2px;}
+  .brand-text small{display:block;font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+
+  .status{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--silver);box-shadow:0 0 8px var(--silver);}
+  .refresh-btn{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    padding:6px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:var(--font-body);font-weight:500;
+    transition:border-color .15s ease;
+  }
+  .refresh-btn:hover{border-color:var(--gold);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    text-align:left;padding:8px 0 30px;
+  }
+  .hero-eyebrow{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:1.5px;margin-bottom:10px;}
+  .hero h1{
+    font-family:var(--font-display);font-weight:800;
+    font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0 0 6px;
+    background:linear-gradient(95deg,#ffffff 30%,var(--gold) 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.tagline{color:var(--muted);font-size:14.5px;margin:0 0 24px;letter-spacing:0.3px;}
+
+  .hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+  @media(max-width:720px){.hero-grid{grid-template-columns:1fr;}}
+
+  .top-reward-card{
+    background:linear-gradient(135deg, rgba(242,182,50,0.14), rgba(21,21,27,0.4));
+    border:1px solid rgba(242,182,50,0.35);
+    border-radius:16px;padding:22px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .top-reward-card .label{font-size:11px;letter-spacing:1.2px;color:var(--gold);font-weight:600;margin-bottom:6px;}
+  .top-reward-card .amount{font-family:var(--font-display);font-size:34px;font-weight:800;color:#fff;}
+  .top-reward-card .cond{font-size:12px;color:var(--muted);margin-top:4px;}
+  .top-reward-card .medal{font-size:38px;line-height:1;}
+
+  .live-leader-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:20px 22px;display:flex;flex-direction:column;justify-content:center;
+  }
+  .live-leader-card .label{font-size:11px;letter-spacing:1.2px;color:var(--muted);font-weight:600;margin-bottom:8px;}
+  .live-leader-card .name{font-family:var(--font-display);font-size:20px;font-weight:700;}
+  .live-leader-card .sub{font-size:12.5px;color:var(--muted);margin-top:4px;}
+
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;gap:6px;margin:36px 0 22px;border-bottom:1px solid var(--line);}
+  .tab-btn{
+    background:none;border:none;color:var(--muted);font-family:var(--font-body);
+    font-weight:600;font-size:14px;padding:10px 4px;margin-right:22px;cursor:pointer;
+    border-bottom:2px solid transparent;transition:color .15s ease, border-color .15s ease;
+  }
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--gold);}
+  .tab-btn:hover{color:var(--text);}
+
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ---------- ACHIEVEMENT LEGEND ---------- */
+  .level-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:30px;}
+  @media(max-width:720px){.level-row{grid-template-columns:repeat(2,1fr);}}
+  .level-chip{
+    border-radius:12px;padding:13px 14px;border:1px solid var(--line);background:var(--panel);
+    position:relative;overflow:hidden;
+  }
+  .level-chip::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+  .level-chip.bronze::before{background:var(--bronze);}
+  .level-chip.silver::before{background:var(--silver);}
+  .level-chip.gold::before{background:var(--gold);}
+  .level-chip.champion::before{background:var(--champion);}
+  .level-chip .lname{font-size:11.5px;font-weight:700;letter-spacing:0.6px;}
+  .level-chip.bronze .lname{color:var(--bronze);}
+  .level-chip.silver .lname{color:var(--silver);}
+  .level-chip.gold .lname{color:var(--gold);}
+  .level-chip.champion .lname{color:var(--champion);}
+  .level-chip .lrange{font-size:12px;color:var(--muted);margin-top:3px;}
+  .level-chip .lreward{font-family:var(--font-display);font-weight:700;font-size:16px;margin-top:6px;}
+
+  /* ---------- SECTION LABEL ---------- */
+  .section-label{font-size:12px;font-weight:700;letter-spacing:1.2px;color:var(--muted);margin:0 0 14px;text-transform:uppercase;}
+
+  /* ---------- PODIUM ---------- */
+  .podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end;margin-bottom:26px;}
+  @media(max-width:640px){.podium{grid-template-columns:1fr;}}
+  .podium-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 16px;text-align:center;
+    position:relative;
+  }
+  .podium-card.p1{order:2;border-color:rgba(242,182,50,0.5);background:linear-gradient(180deg, rgba(242,182,50,0.10), var(--panel));padding-top:24px;}
+  .podium-card.p2{order:1;}
+  .podium-card.p3{order:3;}
+  @media(max-width:640px){.podium-card.p1,.podium-card.p2,.podium-card.p3{order:initial;}}
+  .podium-rank{font-family:var(--font-display);font-weight:800;font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+  .podium-card.p1 .podium-rank{color:var(--gold);}
+  .podium-medal{font-size:26px;margin-bottom:6px;}
+  .podium-name{font-family:var(--font-display);font-weight:700;font-size:15.5px;}
+  .podium-territory{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .podium-score{font-family:var(--font-display);font-size:24px;font-weight:800;margin-top:10px;}
+  .podium-tier{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:700;letter-spacing:0.6px;padding:3px 9px;border-radius:20px;}
+
+  .tier-Bronze{color:var(--bronze);background:rgba(77,144,255,0.12);}
+  .tier-Silver{color:var(--silver);background:rgba(51,207,122,0.12);}
+  .tier-Gold{color:var(--gold);background:rgba(242,182,50,0.14);}
+  .tier-Champion{color:var(--champion);background:rgba(239,27,122,0.14);}
+  .tier-Building{color:var(--muted);background:rgba(154,152,166,0.12);}
+
+  /* ---------- LEADERBOARD LIST ---------- */
+  .lb-row{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s ease;
+  }
+  .lb-row:hover{border-color:#3a3a46;}
+  .lb-top{display:flex;align-items:center;gap:14px;}
+  .lb-rank{font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--muted);width:22px;flex-shrink:0;}
+  .lb-info{flex:1;min-width:0;}
+  .lb-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .lb-name{font-family:var(--font-display);font-weight:600;font-size:14.5px;}
+  .lb-terr{font-size:11px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);padding:1px 7px;border-radius:20px;}
+  .lb-bar-track{background:var(--panel-2);border-radius:6px;height:7px;margin-top:8px;overflow:hidden;}
+  .lb-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold-2),var(--gold));}
+  .lb-right{text-align:right;flex-shrink:0;}
+  .lb-score{font-family:var(--font-display);font-weight:800;font-size:17px;}
+  .lb-incentive{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .lb-chev{color:var(--muted);font-size:12px;margin-left:6px;transition:transform .15s ease;}
+  .lb-row.open .lb-chev{transform:rotate(90deg);}
+
+  .lb-detail{display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+  .lb-row.open .lb-detail{display:block;}
+  .detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  @media(max-width:640px){.detail-grid{grid-template-columns:1fr;}}
+  .detail-card{background:var(--panel-2);border-radius:10px;padding:12px 13px;}
+  .detail-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .detail-title{font-size:11.5px;font-weight:700;letter-spacing:0.4px;}
+  .detail-weight{font-size:10.5px;color:var(--muted);}
+  .detail-pct{font-family:var(--font-display);font-weight:800;font-size:19px;margin-bottom:6px;}
+  .mini-track{background:#26262f;border-radius:5px;height:5px;overflow:hidden;margin-bottom:9px;}
+  .mini-fill{height:100%;border-radius:5px;}
+  .mini-fill.product{background:var(--purple);}
+  .mini-fill.sellout{background:var(--orange);}
+  .mini-fill.outlet{background:var(--cyan);}
+  .subrow{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:2px 0;}
+  .subrow b{color:var(--text);font-weight:600;}
+  .detail-incentive{font-size:11px;color:var(--muted);margin-top:6px;}
+
+  /* ---------- MECHANICS TAB ---------- */
+  .criteria-card{
+    background:var(--panel);border-radius:14px;padding:20px 22px;margin-bottom:14px;
+    border:1px solid var(--line);border-left:3px solid var(--purple);
+  }
+  .criteria-card.c2{border-left-color:var(--orange);}
+  .criteria-card.c3{border-left-color:var(--cyan);}
+  .criteria-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:10px;}
+  .criteria-name{font-family:var(--font-display);font-weight:700;font-size:16.5px;}
+  .criteria-weight{font-family:var(--font-display);font-weight:800;font-size:22px;color:var(--gold);white-space:nowrap;}
+  .criteria-desc{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
+
+  table.tier-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.tier-table th{
+    text-align:right;color:var(--muted);font-weight:600;padding:6px 8px;font-size:11px;letter-spacing:0.3px;
+    border-bottom:1px solid var(--line);
+  }
+  table.tier-table th:first-child,table.tier-table td:first-child{text-align:left;}
+  table.tier-table td{text-align:right;padding:8px;border-bottom:1px solid var(--line);}
+  table.tier-table tr:last-child td{border-bottom:none;font-weight:700;}
+  .col-bronze{color:var(--bronze);}
+  .col-silver{color:var(--silver);}
+  .col-gold{color:var(--gold);}
+  .col-champion{color:var(--champion);}
+
+  .unlock-card{
+    background:linear-gradient(135deg, rgba(242,182,50,0.10), var(--panel));
+    border:1px solid rgba(242,182,50,0.3);border-radius:14px;padding:20px 22px;margin-top:20px;
+  }
+  .unlock-head{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--gold);margin-bottom:2px;}
+  .unlock-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .unlock-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  @media(max-width:640px){.unlock-row{grid-template-columns:repeat(2,1fr);}}
+  .unlock-cell{text-align:center;background:var(--panel-2);border-radius:10px;padding:12px 8px;}
+  .unlock-cell .amt{font-family:var(--font-display);font-weight:800;font-size:17px;}
+  .unlock-cell .tier{font-size:10.5px;margin-top:4px;font-weight:700;letter-spacing:0.4px;}
+
+  footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:50px;padding-top:20px;border-top:1px solid var(--line);}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 30 Q20 20 30 18 L78 6 Q80 6 80 8 L80 24 Q80 32 72 34 L28 44 Z" fill="#f2b632"/>
+        <path d="M20 52 Q20 44 28 42 L62 34 Q64 34 64 36 L64 50 Q64 58 56 60 L28 66 Z" fill="#f2b632"/>
+        <circle cx="24" cy="78" r="9" fill="#f2b632"/>
+      </svg>
+      <div class="brand-text">Formenty<small>THE SALES POWER PLAY</small></div>
+    </div>
+    <div class="status">
+      <span class="dot"></span>
+      <span id="lastUpdated">Loading data…</span>
+      <button class="refresh-btn" onclick="loadData()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">AREA SALES MANAGER INCENTIVE</div>
+    <h1>Level Up. Sell More.<br>Win Big.</h1>
+    <p class="tagline">Hit every target. Unlock every reward. Live ASM leaderboard, updated automatically.</p>
+
+    <div class="hero-grid">
+      <div class="top-reward-card">
+        <div>
+          <div class="label">TOP REWARD · CHAMPION 110%+</div>
+          <div class="amount">₹20,000</div>
+          <div class="cond">Complete all 3 Power Criteria at Champion level</div>
+        </div>
+        <div class="medal">🏆</div>
+      </div>
+      <div class="live-leader-card">
+        <div class="label">CURRENTLY LEADING</div>
+        <div class="name" id="leaderName">—</div>
+        <div class="sub" id="leaderSub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="leaderboard">Leaderboard</button>
+    <button class="tab-btn" data-tab="mechanics">Score Mechanics</button>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div class="tab-panel active" id="tab-leaderboard">
+
+    <div class="level-row">
+      <div class="level-chip bronze"><div class="lname">① BRONZE</div><div class="lrange">80–89%</div><div class="lreward">₹7,500</div></div>
+      <div class="level-chip silver"><div class="lname">② SILVER</div><div class="lrange">90–99%</div><div class="lreward">₹10,000</div></div>
+      <div class="level-chip gold"><div class="lname">③ GOLD</div><div class="lrange">100–110%</div><div class="lreward">₹15,000</div></div>
+      <div class="level-chip champion"><div class="lname">④ CHAMPION</div><div class="lrange">110%+</div><div class="lreward">₹20,000</div></div>
+    </div>
+
+    <div class="section-label">Top performers</div>
+    <div class="podium" id="podium"></div>
+
+    <div class="section-label">Full ranking · tap a row for the breakdown</div>
+    <div id="leaderboardList"></div>
+
+  </div>
+
+  <!-- MECHANICS TAB -->
+  <div class="tab-panel" id="tab-mechanics">
+
+    <div class="criteria-card c1">
+      <div class="criteria-head">
+        <div>
+          <div class="criteria-name">01 · Product Target Challenge</div>
+          <div class="criteria-desc">Win across AC, LED TV and Stabilizer</div>
+        </div>
+        <div class="criteria-weight">60%</div>
+      </div>
+      <table class="tier-table">
+        <tr><th>Product</th><th class="col-bronze">Bronze 80–89%</th><th class="col-silver">Silver 90–99%</th><th class="col-gold">Gold 100–110%</th><th class="col-champion">Champion 110%+</th></tr>
+        <tr><td>Air Conditioner</td><td class="col-bronze">₹2,000</td><td class="col-silver">₹2,500</td><td class="col-gold">₹3,000</td><td class="col-champion">₹4,000</td></tr>
+        <tr><td>LED TV</td><td class="col-bronze">₹2,000</td><td class="col-silver">₹2,500</td><td class="col-gold">₹3,000</td><td class="col-champion">₹4,000</td></tr>
+        <tr><td>Stabilizer</td><td class="col-bronze">₹500</td><td class="col-silver">₹1,000</td><td class="col-gold">₹2,000</td><td class="col-champion">₹3,000</td></tr>
+        <tr><td>Product Total</td><td class="col-bronze">₹4,500</td><td class="col-silver">₹6,000</td><td class="col-gold">₹8,000</td><td class="col-champion">₹11,000</td></tr>
+      </table>
+    </div>
+
+    <div class="criteria-card c2">
+      <div class="criteria-head">
+        <div>
+          <div class="criteria-name">02 · Sell-Out Sprint</div>
+          <div class="criteria-desc">Monthly total sell-out target</div>
+        </div>
+        <div class="criteria-weight">25%</div>
+      </div>
+      <table class="tier-table">
+        <tr><th></th><th class="col-bronze">80–89%</th><th class="col-silver">90–99%</th><th class="col-gold">100–110%</th><th class="col-champion">110%+</th></tr>
+        <tr><td>Reward</td><td class="col-bronze">₹1,500</td><td class="col-silver">₹2,000</td><td class="col-gold">₹4,000</td><td class="col-champion">₹5,000</td></tr>
+      </table>
+    </div>
+
+    <div class="criteria-card c3">
+      <div class="criteria-head">
+        <div>
+          <div class="criteria-name">03 · Active Outlet Quest</div>
+          <div class="criteria-desc">80% active outlets · Minimum 75</div>
+        </div>
+        <div class="criteria-weight">15%</div>
+      </div>
+      <table class="tier-table">
+        <tr><th></th><th class="col-bronze">80–89%</th><th class="col-silver">90–99%</th><th class="col-gold">100–110%</th><th class="col-champion">110%+</th></tr>
+        <tr><td>Reward</td><td class="col-bronze">₹1,500</td><td class="col-silver">₹2,000</td><td class="col-gold">₹3,000</td><td class="col-champion">₹4,000</td></tr>
+      </table>
+    </div>
+
+    <div class="unlock-card">
+      <div class="unlock-head">Reward Unlock</div>
+      <div class="unlock-sub">Complete all 3 criteria — Product + Sell-out + Active outlets — at the same level</div>
+      <div class="unlock-row">
+        <div class="unlock-cell"><div class="amt col-bronze">₹7,500</div><div class="tier col-bronze">BRONZE</div></div>
+        <div class="unlock-cell"><div class="amt col-silver">₹10,000</div><div class="tier col-silver">SILVER</div></div>
+        <div class="unlock-cell"><div class="amt col-gold">₹15,000</div><div class="tier col-gold">GOLD</div></div>
+        <div class="unlock-cell"><div class="amt col-champion">₹20,000</div><div class="tier col-champion">CHAMPION</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>FORMENTY · PERFORM | PROGRESS | WIN</footer>
+
+</div>
+
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOaiyGrvwJSuH7BjiKTuNqNd9QJXlOnl5pKq2nFsHmRFeCuRdBlEBgo8E1hzfJjcr1FsdDIZZProbf/pub?gid=1592021479&single=true&output=csv';
+
+let ASMS = [];
+
+function num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+
+function tierReward(pct, tiers){
+  // tiers = [bronze, silver, gold, champion]
+  if(pct >= 110) return tiers[3];
+  if(pct >= 100) return tiers[2];
+  if(pct >= 90)  return tiers[1];
+  if(pct >= 80)  return tiers[0];
+  return 0;
+}
+
+function tierName(score){
+  if(score >= 110) return 'Champion';
+  if(score >= 100) return 'Gold';
+  if(score >= 90)  return 'Silver';
+  if(score >= 80)  return 'Bronze';
+  return 'Building';
+}
+
+function pct(a,t){ return t ? (a/t*100) : 0; }
+
+function loadData(){
+  document.getElementById('lastUpdated').textContent = 'Refreshing…';
+  const bustedUrl = CSV_URL + (CSV_URL.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+
+  fetch(bustedUrl, { cache: 'no-store' })
+    .then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text();
+    })
+    .then(function(text){
+      const parsed = Papa.parse(text, { skipEmptyLines: false });
+      parseRows(parsed.data);
+    })
+    .catch(function(err){
+      console.error('Dashboard data load failed:', err);
+      document.getElementById('lastUpdated').textContent = 'Could not load live data';
+      const el = document.getElementById('leaderboardList');
+      el.innerHTML = '<div class="empty-state">Couldn\'t load the sheet.<br>' +
+        (err && err.message ? err.message : 'Unknown error') +
+        '<br><br>Check that the Google Sheet is published to the web (File → Share → Publish to web → CSV) and that this file is opened over http(s), not as a local file.</div>';
+    });
+}
+
+function parseRows(rows){
+  const out = [];
+  rows.forEach(row => {
+    const territory = (row[1] || '').toString().trim();
+    const name = (row[2] || '').toString().trim();
+    if(!/^T\d+$/i.test(territory) || !name) return;
+
+    const ac_t = num(row[4]), led_t = num(row[5]), stab_t = num(row[6]);
+    const ac_a = num(row[8]), led_a = num(row[9]), stab_a = num(row[10]);
+    const sellout_t = num(row[13]), sellout_a = num(row[14]);
+    const outlet_t = num(row[16]), outlet_a = num(row[17]);
+
+    const ac_pct = pct(ac_a, ac_t);
+    const led_pct = pct(led_a, led_t);
+    const stab_pct = pct(stab_a, stab_t);
+    const sellout_pct = pct(sellout_a, sellout_t);
+    const outlet_pct = pct(outlet_a, outlet_t);
+
+    const productScore = (ac_pct*0.2)+(led_pct*0.2)+(stab_pct*0.2);
+    const selloutScore = sellout_pct*0.25;
+    const outletScore = outlet_pct*0.15;
+    const totalScore = productScore + selloutScore + outletScore;
+
+    const incentive =
+      tierReward(ac_pct,[2000,2500,3000,4000]) +
+      tierReward(led_pct,[2000,2500,3000,4000]) +
+      tierReward(stab_pct,[500,1000,2000,3000]) +
+      tierReward(sellout_pct,[1500,2000,4000,5000]) +
+      tierReward(outlet_pct,[1500,2000,3000,4000]);
+
+    out.push({
+      territory, name,
+      ac_t, led_t, stab_t, ac_a, led_a, stab_a,
+      ac_pct, led_pct, stab_pct,
+      sellout_t, sellout_a, sellout_pct,
+      outlet_t, outlet_a, outlet_pct,
+      productScore, selloutScore, outletScore, totalScore,
+      incentive
+    });
+  });
+
+  out.sort((a,b) => b.totalScore - a.totalScore);
+  out.forEach((r,i) => r.rank = i+1);
+
+  ASMS = out;
+  render();
+
+  const now = new Date();
+  document.getElementById('lastUpdated').textContent = 'Updated ' + now.toLocaleTimeString();
+}
+
+function render(){
+  renderLeader();
+  renderPodium();
+  renderList();
+}
+
+function renderLeader(){
+  if(!ASMS.length) return;
+  const top = ASMS[0];
+  document.getElementById('leaderName').textContent = top.name;
+  document.getElementById('leaderSub').textContent =
+    top.territory + ' · ' + top.totalScore.toFixed(1) + '% overall · ' + tierName(top.totalScore) + ' tier';
+}
+
+function medalFor(rank){
+  return rank===1 ? '🥇' : rank===2 ? '🥈' : rank===3 ? '🥉' : '';
+}
+
+function renderPodium(){
+  const el = document.getElementById('podium');
+  if(!ASMS.length){ el.innerHTML = '<div class="empty-state">No ranked ASMs yet</div>'; return; }
+  const top3 = ASMS.slice(0,3);
+  el.innerHTML = top3.map((r,i) => {
+    const cls = i===0?'p1':i===1?'p2':'p3';
+    const tier = tierName(r.totalScore);
+    return `
+      <div class="podium-card ${cls}">
+        <div class="podium-rank">RANK ${r.rank}</div>
+        <div class="podium-medal">${medalFor(r.rank)}</div>
+        <div class="podium-name">${r.name}</div>
+        <div class="podium-territory">${r.territory}</div>
+        <div class="podium-score">${r.totalScore.toFixed(1)}%</div>
+        <span class="podium-tier tier-${tier}">${tier.toUpperCase()}</span>
+      </div>`;
+  }).join('');
+}
+
+function renderList(){
+  const el = document.getElementById('leaderboardList');
+  if(!ASMS.length){ el.innerHTML = '<div class="empty-state">No data found in the sheet yet</div>'; return; }
+  const maxScore = Math.max(...ASMS.map(r => r.totalScore), 1);
+
+  el.innerHTML = ASMS.map((r, idx) => {
+    const barW = Math.max(2, Math.round((r.totalScore / maxScore) * 100));
+    const tier = tierName(r.totalScore);
+    return `
+      <div class="lb-row" id="row-${idx}" onclick="toggleRow(${idx})">
+        <div class="lb-top">
+          <div class="lb-rank">#${r.rank}</div>
+          <div class="lb-info">
+            <div class="lb-name-row">
+              <span class="lb-name">${r.name}</span>
+              <span class="lb-terr">${r.territory}</span>
+              <span class="podium-tier tier-${tier}">${tier.toUpperCase()}</span>
+            </div>
+            <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${barW}%"></div></div>
+          </div>
+          <div class="lb-right">
+            <div class="lb-score">${r.totalScore.toFixed(1)}%<span class="lb-chev">▶</span></div>
+            <div class="lb-incentive">₹${r.incentive.toLocaleString('en-IN')} earned</div>
+          </div>
+        </div>
+        <div class="lb-detail">
+          <div class="detail-grid">
+            <div class="detail-card">
+              <div class="detail-head"><span class="detail-title">PRODUCT TARGET</span><span class="detail-weight">60%</span></div>
+              <div class="detail-pct">${(r.productScore/0.6).toFixed(1)}%</div>
+              <div class="mini-track"><div class="mini-fill product" style="width:${Math.min(100,(r.productScore/60)*100)}%"></div></div>
+              <div class="subrow"><span>AC</span><b>${r.ac_pct.toFixed(1)}%</b></div>
+              <div class="subrow"><span>LED TV</span><b>${r.led_pct.toFixed(1)}%</b></div>
+              <div class="subrow"><span>Stabilizer</span><b>${r.stab_pct.toFixed(1)}%</b></div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-head"><span class="detail-title">SELL-OUT SPRINT</span><span class="detail-weight">25%</span></div>
+              <div class="detail-pct">${r.sellout_pct.toFixed(1)}%</div>
+              <div class="mini-track"><div class="mini-fill sellout" style="width:${Math.min(100,r.sellout_pct)}%"></div></div>
+              <div class="subrow"><span>Target</span><b>${r.sellout_t.toLocaleString('en-IN')}</b></div>
+              <div class="subrow"><span>Achieved</span><b>${r.sellout_a.toLocaleString('en-IN')}</b></div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-head"><span class="detail-title">ACTIVE OUTLET</span><span class="detail-weight">15%</span></div>
+              <div class="detail-pct">${r.outlet_pct.toFixed(1)}%</div>
+              <div class="mini-track"><div class="mini-fill outlet" style="width:${Math.min(100,r.outlet_pct)}%"></div></div>
+              <div class="subrow"><span>Target</span><b>${r.outlet_t.toLocaleString('en-IN')}</b></div>
+              <div class="subrow"><span>Achieved</span><b>${r.outlet_a.toLocaleString('en-IN')}</b></div>
+            </div>
+          </div>
+          <div class="detail-incentive">Incentive earned across all 5 sub-targets: ₹${r.incentive.toLocaleString('en-IN')}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleRow(idx){
+  document.getElementById('row-'+idx).classList.toggle('open');
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+loadData();
+setInterval(loadData, 60000);
+</script>
+
+</body>
+</html>

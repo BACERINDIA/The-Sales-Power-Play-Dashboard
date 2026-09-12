@@ -223,7 +223,7 @@
 
   /* ---------- DETAIL TABLE TAB ---------- */
   .detail-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;box-shadow:0 0 16px rgba(61,123,255,0.15);}
-  table.full-table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:1180px;}
+  table.full-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;min-width:1180px;}
   table.full-table th{
     text-align:right;background:var(--panel-2);color:var(--muted);font-weight:600;
     padding:8px 8px;font-size:10px;letter-spacing:0.3px;white-space:nowrap;
@@ -236,6 +236,18 @@
   table.full-table td{text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);white-space:nowrap;}
   table.full-table td:nth-child(1){text-align:center;font-weight:700;}
   table.full-table td:nth-child(2),table.full-table td:nth-child(3){text-align:left;}
+  /* Freeze Rank / Territory / ASM Name columns while scrolling horizontally */
+  table.full-table th:nth-child(1),table.full-table td:nth-child(1){position:sticky;left:0;width:46px;min-width:46px;z-index:3;}
+  table.full-table th:nth-child(2),table.full-table td:nth-child(2){position:sticky;left:46px;width:66px;min-width:66px;z-index:3;}
+  table.full-table th:nth-child(3),table.full-table td:nth-child(3){position:sticky;left:112px;width:150px;min-width:150px;z-index:3;
+    box-shadow:4px 0 8px -3px rgba(0,0,0,0.55);}
+  table.full-table th:nth-child(1),table.full-table th:nth-child(2),table.full-table th:nth-child(3){background:#101d3e;z-index:4;}
+  thead tr:nth-child(1) th:nth-child(-n+3),thead tr:nth-child(2) th:nth-child(-n+3){border-bottom:none;}
+  thead tr:nth-child(3) th:nth-child(-n+3){border-bottom:1px solid var(--line);}
+  th.freeze-fill{padding:8px;}
+  table.full-table tbody tr td:nth-child(1),table.full-table tbody tr td:nth-child(2),table.full-table tbody tr td:nth-child(3){background:#0c1631;}
+  table.full-table tbody tr:nth-child(even) td:nth-child(1),table.full-table tbody tr:nth-child(even) td:nth-child(2),table.full-table tbody tr:nth-child(even) td:nth-child(3){background:#111d40;}
+  table.full-table tbody tr:hover td:nth-child(1),table.full-table tbody tr:hover td:nth-child(2),table.full-table tbody tr:hover td:nth-child(3){background:#16224a;}
   table.full-table tbody tr:nth-child(even) td{background:rgba(61,123,255,0.055);}
   table.full-table tr:hover td{background:rgba(61,123,255,0.12);}
   table.full-table tr:last-child td{border-bottom:none;}
@@ -387,9 +399,9 @@
       <table class="full-table" id="fullTable">
         <thead>
           <tr>
-            <th rowspan="3">Rank</th>
-            <th rowspan="3">Territory</th>
-            <th rowspan="3">ASM Name</th>
+            <th>Rank</th>
+            <th>Territory</th>
+            <th>ASM Name</th>
             <th class="grp-sep" colspan="4">Target</th>
             <th class="grp-sep" colspan="4">Achievement</th>
             <th class="grp-sep" rowspan="3">C-1 Score<br><span class="wt">Product · 60%</span></th>
@@ -402,12 +414,14 @@
             <th rowspan="3">Status</th>
           </tr>
           <tr>
+            <th class="freeze-fill"></th><th class="freeze-fill"></th><th class="freeze-fill"></th>
             <th class="grp-sep wt-row">20%</th><th class="wt-row">20%</th><th class="wt-row">20%</th><th class="wt-row">60%</th>
             <th class="grp-sep wt-row">20%</th><th class="wt-row">20%</th><th class="wt-row">20%</th><th class="wt-row">60%</th>
             <th class="grp-sep wt-row">25%</th><th class="wt-row">25%</th>
             <th class="grp-sep wt-row">15%</th><th class="wt-row">15%</th>
           </tr>
           <tr>
+            <th class="freeze-fill"></th><th class="freeze-fill"></th><th class="freeze-fill"></th>
             <th class="grp-sep">AC</th><th>LED</th><th>STAB</th><th>TOTAL</th>
             <th class="grp-sep">AC</th><th>LED</th><th>STAB</th><th>TOTAL</th>
             <th class="grp-sep">TGT</th><th>ACH</th>

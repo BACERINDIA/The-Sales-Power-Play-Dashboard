@@ -242,9 +242,12 @@
   table.full-table th:nth-child(3),table.full-table td:nth-child(3){position:sticky;left:112px;width:150px;min-width:150px;z-index:3;
     box-shadow:4px 0 8px -3px rgba(0,0,0,0.55);}
   table.full-table th:nth-child(1),table.full-table th:nth-child(2),table.full-table th:nth-child(3){background:#101d3e;z-index:4;}
-  thead tr:nth-child(1) th:nth-child(-n+3),thead tr:nth-child(2) th:nth-child(-n+3){border-bottom:none;}
-  thead tr:nth-child(3) th:nth-child(-n+3){border-bottom:1px solid var(--line);}
+  #fullTable thead tr:nth-child(1) th:nth-child(-n+3),#fullTable thead tr:nth-child(2) th:nth-child(-n+3){border-bottom:none;}
+  #fullTable thead tr:nth-child(3) th:nth-child(-n+3){border-bottom:1px solid var(--line);}
   th.freeze-fill{padding:8px;}
+  table.gap-table{min-width:760px;}
+  .gap-pending{color:var(--gold);font-weight:600;font-size:11.5px;}
+  .gap-done{color:var(--silver);font-weight:700;font-size:11.5px;}
   table.full-table tbody tr td:nth-child(1),table.full-table tbody tr td:nth-child(2),table.full-table tbody tr td:nth-child(3){background:#0c1631;}
   table.full-table tbody tr:nth-child(even) td:nth-child(1),table.full-table tbody tr:nth-child(even) td:nth-child(2),table.full-table tbody tr:nth-child(even) td:nth-child(3){background:#111d40;}
   table.full-table tbody tr:hover td:nth-child(1),table.full-table tbody tr:hover td:nth-child(2),table.full-table tbody tr:hover td:nth-child(3){background:#16224a;}
@@ -410,6 +413,7 @@
             <th class="grp-sep" colspan="2">Active Outlet</th>
             <th class="grp-sep" rowspan="3">C-3 Score<br><span class="wt">Outlet · 15%</span></th>
             <th class="grp-sep" rowspan="3">Total<br>Score</th>
+            <th rowspan="3">Tier</th>
             <th rowspan="3">Incentive</th>
             <th rowspan="3">Status</th>
           </tr>
@@ -429,6 +433,25 @@
           </tr>
         </thead>
         <tbody id="fullTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="section-label" style="margin-top:32px;">Path to the next tier · units still needed per criterion</div>
+    <div class="detail-table-wrap">
+      <table class="full-table gap-table" id="gapTable">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Territory</th>
+            <th>ASM Name</th>
+            <th>Air Conditioner</th>
+            <th>LED TV</th>
+            <th>Stabilizer</th>
+            <th>Sell-Out</th>
+            <th>Active Outlet</th>
+          </tr>
+        </thead>
+        <tbody id="gapTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -635,13 +658,15 @@ function render(){
   renderPodium();
   renderList();
   renderFullTable();
+  renderGapTable();
 }
 
 function renderFullTable(){
   const el = document.getElementById('fullTableBody');
-  if(!ASMS.length){ el.innerHTML = '<tr><td colspan="21" style="text-align:center;color:var(--muted);padding:30px;">No data found</td></tr>'; return; }
+  if(!ASMS.length){ el.innerHTML = '<tr><td colspan="22" style="text-align:center;color:var(--muted);padding:30px;">No data found</td></tr>'; return; }
   el.innerHTML = ASMS.map(r => {
     const status = statusName(r.totalScore);
+    const tier = tierName(r.totalScore);
     return `<tr>
       <td>#${r.rank}</td>
       <td>${r.territory}</td>
@@ -653,9 +678,48 @@ function renderFullTable(){
       <td class="grp-sep"><b>${r.selloutScore.toFixed(2)}</b></td>
       <td class="grp-sep">${r.outlet_t.toLocaleString('en-IN')}</td><td>${r.outlet_a.toLocaleString('en-IN')}</td>
       <td class="grp-sep"><b>${r.outletScore.toFixed(2)}</b></td>
-      <td class="grp-sep"><b>${r.totalScore.toFixed(2)}</b></td>
+      <td class="grp-sep"><b>${r.totalScore.toFixed(2)}%</b></td>
+      <td><span class="podium-tier tier-${tier}">${tier.toUpperCase()}</span></td>
       <td>₹${r.incentive.toLocaleString('en-IN')}</td>
       <td><span class="status-badge ${statusClass(status)}">${status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+const TIER_THRESHOLDS = [[80,'Bronze'],[90,'Silver'],[100,'Gold'],[110,'Champion']];
+
+function gapToNextTier(target, achieved){
+  if(!target) return {label:'—', done:false, na:true};
+  const pct = (achieved/target)*100;
+  for(const [threshold, name] of TIER_THRESHOLDS){
+    if(pct < threshold){
+      const needed = Math.ceil(target * threshold/100) - achieved;
+      return {label: needed.toLocaleString('en-IN') + ' more → ' + name, done:false, tier:name};
+    }
+  }
+  return {label:'✓ Champion', done:true};
+}
+
+function renderGapTable(){
+  const el = document.getElementById('gapTableBody');
+  if(!el) return;
+  if(!ASMS.length){ el.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px;">No data found</td></tr>'; return; }
+  el.innerHTML = ASMS.map(r => {
+    const ac = gapToNextTier(r.ac_t, r.ac_a);
+    const led = gapToNextTier(r.led_t, r.led_a);
+    const stab = gapToNextTier(r.stab_t, r.stab_a);
+    const sellout = gapToNextTier(r.sellout_t, r.sellout_a);
+    const outlet = gapToNextTier(r.outlet_t, r.outlet_a);
+    const cell = g => g.done ? `<span class="gap-done">${g.label}</span>` : `<span class="gap-pending">${g.label}</span>`;
+    return `<tr>
+      <td>#${r.rank}</td>
+      <td>${r.territory}</td>
+      <td>${r.name}</td>
+      <td>${cell(ac)}</td>
+      <td>${cell(led)}</td>
+      <td>${cell(stab)}</td>
+      <td>${cell(sellout)}</td>
+      <td>${cell(outlet)}</td>
     </tr>`;
   }).join('');
 }

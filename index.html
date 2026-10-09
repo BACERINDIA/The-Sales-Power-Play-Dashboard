@@ -415,7 +415,6 @@
             <th class="grp-sep" rowspan="3">Total<br>Score</th>
             <th rowspan="3">Tier</th>
             <th rowspan="3">Incentive</th>
-            <th rowspan="3">Status</th>
           </tr>
           <tr>
             <th class="freeze-fill"></th><th class="freeze-fill"></th><th class="freeze-fill"></th>
@@ -515,17 +514,6 @@
       </div>
     </div>
 
-    <div class="status-legend-card">
-      <div class="unlock-head">Performance Status</div>
-      <div class="unlock-sub">Based on overall weighted attainment (Total Score Card %)</div>
-      <div class="status-legend-row">
-        <div class="status-legend-cell"><span class="status-badge status-Outstanding">Outstanding</span><span class="slabel">100% &amp; above</span></div>
-        <div class="status-legend-cell"><span class="status-badge status-Excellent">Excellent</span><span class="slabel">81 – 99%</span></div>
-        <div class="status-legend-cell"><span class="status-badge status-Good">Good</span><span class="slabel">70 – 80%</span></div>
-        <div class="status-legend-cell"><span class="status-badge status-NeedsImprovement">Needs Improvement</span><span class="slabel">60 – 69%</span></div>
-        <div class="status-legend-cell"><span class="status-badge status-Critical">Critical</span><span class="slabel">Below 60% · Immediate Action Required</span></div>
-      </div>
-    </div>
 
   </div>
 
@@ -663,9 +651,8 @@ function render(){
 
 function renderFullTable(){
   const el = document.getElementById('fullTableBody');
-  if(!ASMS.length){ el.innerHTML = '<tr><td colspan="22" style="text-align:center;color:var(--muted);padding:30px;">No data found</td></tr>'; return; }
+  if(!ASMS.length){ el.innerHTML = '<tr><td colspan="21" style="text-align:center;color:var(--muted);padding:30px;">No data found</td></tr>'; return; }
   el.innerHTML = ASMS.map(r => {
-    const status = statusName(r.totalScore);
     const tier = tierName(r.totalScore);
     return `<tr>
       <td>#${r.rank}</td>
@@ -681,7 +668,6 @@ function renderFullTable(){
       <td class="grp-sep"><b>${r.totalScore.toFixed(2)}%</b></td>
       <td><span class="podium-tier tier-${tier}">${tier.toUpperCase()}</span></td>
       <td>₹${r.incentive.toLocaleString('en-IN')}</td>
-      <td><span class="status-badge ${statusClass(status)}">${status}</span></td>
     </tr>`;
   }).join('');
 }
@@ -769,7 +755,6 @@ function renderPodium(){
   el.innerHTML = top3.map((r,i) => {
     const cls = i===0?'p1':i===1?'p2':'p3';
     const tier = tierName(r.totalScore);
-    const status = statusName(r.totalScore);
     return `
       <div class="podium-card ${cls}">
         <div class="podium-rank">RANK ${r.rank}</div>
@@ -778,7 +763,6 @@ function renderPodium(){
         <div class="podium-territory">${r.territory}</div>
         <div class="podium-score">${r.totalScore.toFixed(1)}%</div>
         <div><span class="podium-tier tier-${tier}">${tier.toUpperCase()}</span></div>
-        <div style="margin-top:6px;"><span class="status-badge ${statusClass(status)}">${status}</span></div>
       </div>`;
   }).join('');
 }
@@ -791,7 +775,6 @@ function renderList(){
   el.innerHTML = ASMS.map((r, idx) => {
     const barW = Math.max(2, Math.round((r.totalScore / maxScore) * 100));
     const tier = tierName(r.totalScore);
-    const status = statusName(r.totalScore);
     return `
       <div class="lb-row" id="row-${idx}" onclick="toggleRow(${idx})">
         <div class="lb-top">
@@ -801,7 +784,6 @@ function renderList(){
               <span class="lb-name">${r.name}</span>
               <span class="lb-terr">${r.territory}</span>
               <span class="podium-tier tier-${tier}">${tier.toUpperCase()}</span>
-              <span class="status-badge ${statusClass(status)}">${status}</span>
             </div>
             <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${barW}%"></div></div>
           </div>
